@@ -6,6 +6,8 @@
     <title>Egg on Dog (on sol) - The Funniest Coin Ever!</title>
     <style>
         body {
+            position: relative; /* Add this */
+            z-index: 0; /* Ensure body has a lower z-index */
             font-family: 'Comic Sans MS', cursive, sans-serif;
             background-color: #3e0a6f;
             color: #ebff7b;
@@ -16,6 +18,7 @@
         }
 
         .banner {
+            z-index: 1;
             background: linear-gradient(135deg, #3498db 0%, #9b59b6 100%); /* Colorful gradient background */
             position: relative;
             padding: 0; /* Adjust the padding to zero */
@@ -83,6 +86,8 @@
             animation: wag 2s infinite;
         }
         .content {
+            position: relative; /* Add this */
+            z-index: 1; /* Ensure content has a higher z-index */
             padding: 20px;
         }
         .links {
@@ -189,18 +194,35 @@
         }
 
         .interactive {
-            margin: 20px auto;
+            margin: 50px auto;
             padding: 20px;
-            background: #d491d400;
+            background: #b35eb35b;
             border-radius: 10px;
             width: 80%;
             max-width: 600px;
+            min-height: 100px;
             color: #ffcc00;
             font-size: 5em;
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            z-index: 1; /* Ensure interactive has a lower z-index */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            user-select: none; /* Make text unselectable */
         }
+
+        .interactive:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .interactive:active {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(2px);
+        }
+
+
         .interactive .dog-revealed {
             font-size: 2em;
             position: absolute;
@@ -224,6 +246,29 @@
             display: none;
         }
 
+        @keyframes fallAndSpin {
+            0% {
+                transform: translateY(-100%) rotate(0deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0) rotate(720deg);
+                opacity: 1;
+            }
+        }
+
+        .falling-dog {
+            position: absolute;
+            top: -100px; /* Adjust to ensure visibility */
+            left: 10px; /* Adjust to position on the left side */
+            width: 50px; /* Adjust the size as needed */
+            height: auto;
+            z-index: 10; /* Ensure it is above other elements */
+            animation: fallAndSpin 2s forwards;
+        }
+
+
+
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-30px); }
@@ -243,6 +288,23 @@
         @keyframes slideOut {
             0% { transform: translateY(0); }
             100% { transform: translateY(100px); }
+        }
+
+        .click-indicator {
+            position: absolute;
+            font-size: 0.4em;
+            color: #ffcc00;
+            transform: rotate(0deg);
+            top: 40px; /* Move the indicator above the interactive div */
+            right: 75%; /* Adjust the horizontal position as needed */
+            animation: bounceIndicator 1s infinite;
+            z-index: 100; /* Ensure the indicator is above other elements */
+        }
+
+        @keyframes bounceIndicator {
+            0%, 20%, 50%, 80%, 100% { transform: rotate(0deg) translateY(0); }
+            40% { transform: rotate(0deg) translateY(-10px); }
+            60% { transform: rotate(0deg) translateY(-5px); }
         }
 
         /* Media Queries for Responsive Design */
@@ -287,6 +349,11 @@
                 font-size: 1.5em;
                 top: 20%;
             }
+            .click-indicator {
+                font-size: 0.5em;
+                top: 10px;
+                right: -30px;
+            }
         }
 
         @media only screen and (max-width: 480px) {
@@ -317,6 +384,11 @@
             .interactive .dog-revealed {
                 font-size: 1em;
                 top: 30%;
+            }
+            .click-indicator {
+                font-size: 0.3em;
+                top: 5px;
+                right: -20px;
             }
         }
     </style>
@@ -386,9 +458,9 @@
         &copy; 2024 Egg on Dog.
     </footer>
     <script>
+        const dog = document.getElementById('dog');
         dog.classList.add('hide');
         function revealDog() {
-            const dog = document.getElementById('dog');
             const egg = document.getElementById('egg');
 
             if (dog.classList.contains('show')) {
@@ -425,6 +497,32 @@
             // Unhighlight the text
             window.getSelection().removeAllRanges();
         }
+
+        // Function to randomly select one of the dog images
+        function getRandomDogImage() {
+            const images = ['dog1.png', 'dog2.png', 'dog3.png'];
+            const randomIndex = Math.floor(Math.random() * images.length);
+            return images[randomIndex];
+        }
+
+        // Function to create and animate the falling dog image
+        function createFallingDog() {
+            const imgSrc = getRandomDogImage();
+            const fallingDog = document.createElement('img');
+            fallingDog.src = imgSrc;
+            fallingDog.classList.add('falling-dog');
+            
+            // Remove the image after the animation completes
+            fallingDog.addEventListener('animationend', () => {
+                fallingDog.remove();
+            });
+            
+            document.querySelector('.interactive').appendChild(fallingDog);
+        }
+
+        // Add hover event listener to the interactive div
+        document.querySelector('.interactive').addEventListener('mouseover', createFallingDog);
+
 
 
     </script>
