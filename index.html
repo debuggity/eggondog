@@ -93,6 +93,14 @@
         .links {
             margin: 20px 0;
         }
+        .links img {
+            width: 30px; /* Adjust width if necessary */
+            vertical-align: middle;
+            margin-right: 10px;
+            position: relative;
+            top: 0px; /* Adjust this value to move the icon up */
+        }
+
         .links a {
             color: #ffcc00;
             text-decoration: none;
@@ -103,7 +111,10 @@
             border-radius: 5px;
             transition: background-color 0.3s, color 0.3s;
             background-color: rgba(255, 204, 0, 0.2); /* Slight background */
+            display: inline-flex;
+            align-items: center; /* Ensures text and icon are centered vertically */
         }
+
         .links a:hover {
             background-color: #ffcc00;
             color: #2c3e50;
@@ -204,7 +215,7 @@
             color: #ffcc00;
             font-size: 5em;
             cursor: pointer;
-            position: relative;
+            position: relative; /* Ensure interactive has a relative position */
             overflow: hidden;
             z-index: 1; /* Ensure interactive has a lower z-index */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -257,18 +268,6 @@
             }
         }
 
-        .falling-dog {
-            position: absolute;
-            top: -100px; /* Adjust to ensure visibility */
-            left: 10px; /* Adjust to position on the left side */
-            width: 50px; /* Adjust the size as needed */
-            height: auto;
-            z-index: 10; /* Ensure it is above other elements */
-            animation: fallAndSpin 2s forwards;
-        }
-
-
-
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-30px); }
@@ -290,21 +289,22 @@
             100% { transform: translateY(100px); }
         }
 
-        .click-indicator {
+        .new-click-indicator {
             position: absolute;
-            font-size: 0.4em;
-            color: #ffcc00;
-            transform: rotate(0deg);
-            top: 40px; /* Move the indicator above the interactive div */
-            right: 75%; /* Adjust the horizontal position as needed */
+            top: 280px;
+            right: 825px; /* Position it at the top right corner */
             animation: bounceIndicator 1s infinite;
             z-index: 100; /* Ensure the indicator is above other elements */
+            width: 150px; /* Set a fixed width for the image */
+            height: auto; /* Maintain the aspect ratio */
+            opacity: 80%;
+            cursor: pointer;
         }
 
         @keyframes bounceIndicator {
-            0%, 20%, 50%, 80%, 100% { transform: rotate(0deg) translateY(0); }
-            40% { transform: rotate(0deg) translateY(-10px); }
-            60% { transform: rotate(0deg) translateY(-5px); }
+            0%, 20%, 50%, 80%, 100% { transform: rotate(25deg) translateY(0); }
+            40% { transform: rotate(25deg) translateY(-10px); }
+            60% { transform: rotate(25deg) translateY(-5px); }
         }
 
         /* Media Queries for Responsive Design */
@@ -349,10 +349,8 @@
                 font-size: 1.5em;
                 top: 20%;
             }
-            .click-indicator {
-                font-size: 0.5em;
-                top: 10px;
-                right: -30px;
+            .new-click-indicator {
+                transform: translateY(-50%);
             }
         }
 
@@ -405,7 +403,7 @@
                 <img src="telegram.png" alt="Telegram" style="width: 30px; vertical-align: middle; margin-right: 10px;">Telegram
             </a>
             <a href="https://dexscreener.com/solana/hdmytf6wwy9xvfcywf4kraggjbuq8exxxjvzpkkobogs" target="_blank">
-                <img src="dexscreen.png" alt="Chart" style="width: 40px; vertical-align: middle; margin-right: 10px;">Chart
+                <img src="dexscreen.png" alt="Chart" style="width: 26px; vertical-align: middle; margin-right: 10px;">Chart
             </a>
             <a href="https://x.com/eggondog5" target="_blank">
                 <img src="X.png" alt="Twitter" style="width: 30px; vertical-align: middle; margin-right: 10px;">Twitter
@@ -416,11 +414,14 @@
             CA: 75h1bxgQQP4rgSmdq9gsbohtZAkPmRFYDinPsvck5sPx
             <button id="copy-btn" onclick="copyToClipboard('75h1bxgQQP4rgSmdq9gsbohtZAkPmRFYDinPsvck5sPx')">📋</button>
         </div>
+        <img src="clickme.png" alt="Click me" class="new-click-indicator" id="click-indicator">
 
-        <div class="interactive" onclick="revealDog()">
+        <div class="interactive" id="interactive" onclick="revealDog()">
             <div id="egg" class="emoji">🥚</div>
             <div id="dog" class="dog-revealed">🐶</div>
         </div>
+        
+        
         
         <div class="timeline">
             <h2>Timeline of Egg on Dog (on sol)</h2>
@@ -460,6 +461,7 @@
     <script>
         const dog = document.getElementById('dog');
         dog.classList.add('hide');
+
         function revealDog() {
             const egg = document.getElementById('egg');
 
@@ -473,6 +475,48 @@
                 egg.innerHTML = '🍳';
             }
         }
+
+        const clickIndicator = document.getElementById('click-indicator');
+        const interactiveBox = document.querySelector('.interactive');
+
+        function setIndicatorPosition() {
+            const interactiveBox = document.querySelector('.interactive');
+            const interactiveRect = interactiveBox.getBoundingClientRect();
+            const bodyRect = document.body.getBoundingClientRect();
+            const offsetRight = bodyRect.right - interactiveRect.right;
+
+            if (window.innerWidth <= 768) {
+                // Adjust for mobile devices
+                clickIndicator.style.right = `${offsetRight - 50}px`;
+            } else {
+                // Default adjustment for larger screens
+                clickIndicator.style.right = `${offsetRight - 80}px`;
+            }
+        }
+
+        // Set the position initially
+        setIndicatorPosition();
+
+        // Update the position if the window is resized
+        window.addEventListener('resize', setIndicatorPosition);
+
+
+        clickIndicator.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevents the event from bubbling up to parent elements
+            revealDog();
+            interactiveBox.click(); // Triggers the click event on the interactive div
+        });
+
+
+
+        // Add an event listener to update the position on window resize
+        window.addEventListener('resize', setIndicatorPosition);
+
+        // Add an event listener to the click indicator to trigger the revealDog function
+        clickIndicator.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevents the event from bubbling up to parent elements
+            revealDog();
+        });
 
         function copyToClipboard(text) {
             const tempInput = document.createElement('input');
@@ -497,33 +541,6 @@
             // Unhighlight the text
             window.getSelection().removeAllRanges();
         }
-
-        // Function to randomly select one of the dog images
-        function getRandomDogImage() {
-            const images = ['dog1.png', 'dog2.png', 'dog3.png'];
-            const randomIndex = Math.floor(Math.random() * images.length);
-            return images[randomIndex];
-        }
-
-        // Function to create and animate the falling dog image
-        function createFallingDog() {
-            const imgSrc = getRandomDogImage();
-            const fallingDog = document.createElement('img');
-            fallingDog.src = imgSrc;
-            fallingDog.classList.add('falling-dog');
-            
-            // Remove the image after the animation completes
-            fallingDog.addEventListener('animationend', () => {
-                fallingDog.remove();
-            });
-            
-            document.querySelector('.interactive').appendChild(fallingDog);
-        }
-
-        // Add hover event listener to the interactive div
-        document.querySelector('.interactive').addEventListener('mouseover', createFallingDog);
-
-
 
     </script>
 </body>
