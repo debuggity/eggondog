@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egg on Dog (on sol) - The Funniest Coin Ever!</title>
+    <style>
+       body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #3e0a6f;
+            color: #ebff7b;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #3e0a6f 0%, #5e55dd 100%);
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #3498db 0%, #9b59b6 100%); /* Colorful gradient background */
+            position: relative;
+            padding: 0; /* Adjust the padding to zero */
+            font-size: 4em;
+            color: #ffffff;
+            text-shadow: 2px 2px #000000;
+            overflow: hidden; /* Ensure no overflow */
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('eggondog.png') no-repeat center center;
+            background-size: contain;
+            filter: blur(20px); /* Blurred background */
+            z-index: -1; /* Behind the banner content */
+            animation: pulse 10s infinite; /* Animation */
+        }
+
+        .banner img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            animation: fadeIn 3s; /* Image animation */
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .emoji-container {
+            margin-top: -80px;
+            font-size: 5em;
+        }
+        .emoji {
+            display: inline-block;
+            margin: 0 20px;
+        }
+        .emoji.egg {
+            animation: bounce 2s infinite;
+        }
+        .emoji.dog {
+            animation: wag 2s infinite;
+        }
+        .content {
+            padding: 20px;
+        }
+        .links {
+            margin: 20px 0;
+        }
+        .links a {
+            color: #ffcc00;
+            text-decoration: none;
+            font-size: 1.2em;
+            margin: 0 15px;
+            border: 2px solid #ffcc00;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            background-color: rgba(255, 204, 0, 0.2); /* Slight background */
+        }
+        .links a:hover {
+            background-color: #ffcc00;
+            color: #2c3e50;
+        }
+        .contract-address {
+            margin: 20px 0;
+            font-size: 1em;
+            background-color: #333333a0;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            user-select: all;
+        }
+        .contract-address button {
+            background: #ffcc00;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .contract-address button:hover {
+            background-color: #2c3e50;
+            color: #ffcc00;
+        }
+        footer {
+            margin: 40px 0;
+            font-size: 0.8em;
+            color: #999999;
+        }
+        .timeline {
+            margin: 40px auto;
+            position: relative;
+            max-width: 800px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #8e44ad;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: #ffcc00;
+            top: 80px; /* Updated line to add distance from the top */
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            background: #9b59b6;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            width: 45%;
+            margin: 20px 0;
+        }
+
+        .timeline-item.left {
+            right: 1%;
+        }
+        .timeline-item.right {
+            left: 51%;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background-color: #ffcc00;
+            border: 4px solid #8e44ad;
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-item.left::after {
+            right: -13px;
+        }
+
+        .timeline-item.right::after {
+            left: -13px;
+        }
+
+        .interactive {
+            margin: 20px auto;
+            padding: 20px;
+            background: #d491d400;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            color: #ffcc00;
+            font-size: 5em;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .interactive .dog-revealed {
+            font-size: 2em;
+            position: absolute;
+            left: 50%;
+            top: 10%;
+            transform: translate(-50%, -50%);
+        }
+
+        .interactive .dog-revealed.show {
+            display: block;
+            animation: slideIn 1s forwards;
+        }
+
+        .interactive .dog-revealed.hide {
+            display: block;
+            animation: slideOut 1s forwards;
+        }
+
+        .emoji.cooked-egg {
+            font-size: 5em;
+            display: none;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+
+        @keyframes wag {
+            0%, 100% { transform: rotate(0); }
+            50% { transform: rotate(-10deg); }
+        }
+
+        @keyframes slideIn {
+            0% { transform: translateY(100px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes slideOut {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100px); }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <img src="eggondog.png" alt="Egg on Dog">
+    </div>
+    <div class="content">
+        <h1>Egg on Dog (on sol)</h1>
+        <br>
+        <div class="links">
+            <a href="https://t.me/+29cIStieysZhOTBh" target="_blank">
+                <img src="telegram.png" alt="Telegram" style="width: 30px; vertical-align: middle; margin-right: 10px;">Telegram
+            </a>
+            <a href="https://dexscreener.com/solana/hdmytf6wwy9xvfcywf4kraggjbuq8exxxjvzpkkobogs" target="_blank">
+                <img src="dexscreen.png" alt="Chart" style="width: 40px; vertical-align: middle; margin-right: 10px;">Chart
+            </a>
+            <a href="https://x.com/eggondog5" target="_blank">
+                <img src="x.png" alt="Twitter" style="width: 30px; vertical-align: middle; margin-right: 10px;">Twitter
+            </a>
+        </div>
+        
+        <div class="contract-address">
+            CA: 75h1bxgQQP4rgSmdq9gsbohtZAkPmRFYDinPsvck5sPx
+            <button id="copy-btn" onclick="copyToClipboard('75h1bxgQQP4rgSmdq9gsbohtZAkPmRFYDinPsvck5sPx')">📋</button>
+        </div>
+
+        <div class="interactive" onclick="revealDog()">
+            <div id="egg" class="emoji">🥚</div>
+            <div id="dog" class="dog-revealed">🐶</div>
+        </div>
+        
+        <div class="timeline">
+            <h2>Timeline of Egg on Dog (on sol)</h2>
+            <br><br>
+            <div class="emoji-container">
+                <div class="emoji egg">🥚</div>
+                <div class="emoji dog">🐶</div>
+            </div>
+            <div class="timeline-item left">
+                <strong>🥚 Step 1:</strong> The egg meets the dog. Sparks fly.
+            </div>
+            <div class="timeline-item right">
+                <strong>🥚 Step 2:</strong> The dog decides to sit on the egg. Egg-citement ensues.
+            </div>
+            <div class="timeline-item left">
+                <strong>🥚 Step 3:</strong> The egg hatches, but it's another dog! Double trouble.
+            </div>
+            <div class="timeline-item right">
+                <strong>🥚 Step 4:</strong> Egg on Dog (on sol) coin is launched. Memes break the internet.
+            </div>
+            <div class="timeline-item left">
+                <strong>🥚 Step 5:</strong> Investors are rolling in dough, thanks to Egg on Dog.
+            </div>
+            <div class="timeline-item right">
+                <strong>🥚 Step 6:</strong> Egg on Dog featured on prime-time news. Interview with the egg.
+            </div>
+            <div class="timeline-item left">
+                <strong>🥚 Step 7:</strong> Egg on Dog hosts its first community event. Dog and egg cosplay contests galore.
+            </div>
+            
+        </div>
+        <style>#dexscreener-embed{transform:translateX(25%); width:65%;padding-bottom:125%;}@media(min-width:1400px){#dexscreener-embed{padding-bottom:65%;}}#dexscreener-embed iframe{position:absolute;width:100%;height:100%;top:0;left:0;border:0;}</style><div id="dexscreener-embed"><iframe src="https://dexscreener.com/solana/HdMYTf6wwY9xVfCyWf4kRAGgJBUQ8eXXxJVZpkkoboGS?embed=1&theme=dark"></iframe></div>
+    </div>
+    <footer>
+        &copy; 2024 Egg on Dog.
+    </footer>
+    <script>
+        dog.classList.add('hide');
+        function revealDog() {
+            const dog = document.getElementById('dog');
+            const egg = document.getElementById('egg');
+
+            if (dog.classList.contains('show')) {
+                dog.classList.remove('show');
+                dog.classList.add('hide');
+                egg.innerHTML = '🥚';
+            } else {
+                dog.classList.remove('hide');
+                dog.classList.add('show');
+                egg.innerHTML = '🍳';
+            }
+        }
+
+        function copyToClipboard(text) {
+            const tempInput = document.createElement('input');
+            tempInput.style.position = 'absolute';
+            tempInput.style.left = '-9999px';
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+
+            navigator.clipboard.writeText(text).then(function() {
+                const copyBtn = document.getElementById('copy-btn');
+                copyBtn.innerHTML = '✅ Copied!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '📋';
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+            }).finally(() => {
+                document.body.removeChild(tempInput);
+            });
+
+            // Unhighlight the text
+            window.getSelection().removeAllRanges();
+        }
+
+
+    </script>
+</body>
+</html>
