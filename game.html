@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egg on Dog Game</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            background: linear-gradient(to bottom, #391a66, #b9c8e5);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        #bannerImage {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 20vh;
+        }
+
+        .score-board {
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 1.2em;
+            display: none; /* Hide initially */
+        }
+
+        canvas {
+            background-color: #fff;
+            border: 2px solid #000;
+            max-width: 90%;
+            height: auto;
+            margin-top: 10px;
+            box-sizing: border-box;
+            display: none; /* Hide initially */
+            position: relative;
+        }
+
+        .background-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            animation: float 10s infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        .score-feedback {
+            position: absolute;
+            color: #44ff8f;
+            font-size: 2em;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            animation: fadeOut 2s forwards;
+            user-select: none; /* Make text unselectable */
+            pointer-events: none;
+        }
+
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-over h1 {
+            font-size: 2.5em;
+            color: #ff4444;
+            margin: 0;
+        }
+
+        .game-over p {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+
+        .game-over button {
+            background: #ff4444;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .game-over button:hover {
+            background: #ff6666;
+        }
+
+        #homeButton {
+            margin-top: 10px;
+            background: #be77d0;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            align-self: flex-start; /* Align the button to the start of the flex container */
+            margin-left: 10px; /* Add some margin to the left to give it space from the edge */
+        }
+
+        #homeButton:hover {
+            background: #9166ff;
+        }
+
+        #playGameButton {
+            margin-top: 20px;
+            background: #ff4444;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        #playGameButton:hover {
+            background: #ff6666;
+        }
+
+    </style>
+</head>
+<body>
+
+    <img id="bannerImage" src="eggondog.png" alt="Banner Image">
+    <button id="homeButton">Home</button>
+    <button id="playGameButton">Play Game</button> <!-- Add Play Game button -->
+    <div class="score-board" id="scoreBoard">Score: 0</div>
+
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <div class="background-animation" id="backgroundAnimation"></div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreBoard = document.getElementById('scoreBoard');
+        const playGameButton = document.getElementById('playGameButton'); // Get the Play Game button
+        const backgroundAnimation = document.getElementById('backgroundAnimation');
+
+        const dogImage = new Image();
+        dogImage.src = 'dog1.png';
+        
+        const eggImage = new Image();
+        eggImage.src = 'egg.png';
+
+        const dog = {
+            x: canvas.width / 2 - 50,
+            y: canvas.height - 100,
+            width: 100,
+            height: 100
+        };
+
+        let eggs = [{
+            x: Math.random() * (canvas.width - 50),
+            y: Math.random() * (canvas.height - 300),
+            width: 50,
+            height: 65,
+            dx: 2,
+            dy: 2
+        }];
+
+        let score = 0;
+        let gameRunning = true;
+        let eggInterval;
+
+        function drawDog() {
+            ctx.drawImage(dogImage, dog.x, dog.y, dog.width, dog.height);
+        }
+
+        function drawEgg(egg) {
+            ctx.drawImage(eggImage, egg.x, egg.y, egg.width, egg.height);
+        }
+
+        function drawScore() {
+            scoreBoard.textContent = 'Score: ' + score;
+        }
+
+        function updateEggPosition(egg) {
+            if (!gameRunning) return;
+
+            egg.x += egg.dx;
+            egg.y += egg.dy;
+
+            if (egg.x + egg.width > canvas.width || egg.x < 0) {
+                egg.dx *= -1;
+            }
+
+            if (egg.y < 0) {
+                egg.dy *= -1;
+            }
+
+            if (
+                egg.y + egg.height >= dog.y &&
+                egg.y <= dog.y + dog.height &&
+                egg.x + egg.width >= dog.x &&
+                egg.x <= dog.x + dog.width
+            ) {
+                if (egg.dy > 0) {
+                    egg.dy *= -1;
+                    score++;
+                    egg.y = dog.y - egg.height;
+                    showScoreFeedback();
+                }
+            }
+
+            if (egg.y + egg.height > canvas.height) {
+                gameOver();
+            }
+        }
+
+        let gameOverHue1 = 0;
+        let gameOverHue2 = 60;
+
+        function drawGameOverGradient() {
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, `hsl(${gameOverHue1}, 100%, 75%)`);
+            gradient.addColorStop(1, `hsl(${gameOverHue2}, 100%, 75%)`);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Increment hue values for changing gradient (soft red shades)
+            gameOverHue1 = (gameOverHue1 + 0.2) % 360;
+            gameOverHue2 = (gameOverHue2 + 0.2) % 360;
+
+            if (!gameRunning) {
+                requestAnimationFrame(drawGameOverGradient);
+            }
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            clearInterval(eggInterval);
+            eggs = [];
+
+            // Start gradient animation for game over screen
+            drawGameOverGradient();
+
+            const gameOverDiv = document.createElement('div');
+            gameOverDiv.classList.add('game-over');
+            gameOverDiv.innerHTML = `
+                <h1>Game Over!</h1>
+                <p>Your score: ${score}</p>
+                <button onclick="restartGame()">Play Again</button>
+                <br><br>
+                <a href="https://dexscreener.com/solana/hdmytf6wwy9xvfcywf4kraggjbuq8exxxjvzpkkobogs" target="_blank">
+                    <img src="dexscreen.png" alt="Chart" style="width: 27px; vertical-align: middle; margin-right: 10px;">Buy egg on dog now!
+                </a>
+            `;
+            document.body.appendChild(gameOverDiv);
+        }
+
+        function restartGame() {
+            document.querySelector('.game-over').remove();
+            score = 0;
+            eggs = [{
+                x: Math.random() * (canvas.width - 50),
+                y: Math.random() * (canvas.height - 300),
+                width: 50,
+                height: 65,
+                dx: 2,
+                dy: 2
+            }];
+            gameRunning = true;
+            eggInterval = setInterval(addEgg, 15000);
+            gameLoop();
+        }
+
+
+        function updateDogPosition(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            dog.x = mouseX - dog.width / 2;
+
+            if (dog.x < 0) {
+                dog.x = 0;
+            } else if (dog.x + dog.width > canvas.width) {
+                dog.x = canvas.width - dog.width;
+            }
+        }
+
+        let hue1 = 0;
+        let hue2 = 180;
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, `hsl(${hue1}, 100%, 50%)`);
+            gradient.addColorStop(1, `hsl(${hue2}, 100%, 50%)`);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Increment hue values for changing gradient (half as fast)
+            hue1 = (hue1 + 0.5) % 360;
+            hue2 = (hue2 + 0.5) % 360;
+
+            drawDog();
+            eggs.forEach(egg => {
+                drawEgg(egg);
+                updateEggPosition(egg);
+            });
+            drawScore();
+            if (gameRunning) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+
+        function addEgg() {
+            if (!gameRunning) return;
+
+            const eggMinY = 50;
+            const eggMaxY = canvas.height - 300;
+            eggs.push({
+                x: Math.random() * (canvas.width - 50),
+                y: eggMinY + Math.random() * (eggMaxY - eggMinY),
+                width: 50,
+                height: 65,
+                dx: 2,
+                dy: 2
+            });
+        }
+
+        function createBackgroundAnimation() {
+            for (let i = 0; i < 20; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('circle');
+                const size = Math.random() * 100 + 50;
+                circle.style.width = `${size}px`;
+                circle.style.height = `${size}px`;
+                circle.style.left = `${Math.random() * 100}%`;
+                circle.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                circle.style.animationDelay = `${Math.random() * 5}s`;
+                backgroundAnimation.appendChild(circle);
+            }
+        }
+
+        function showScoreFeedback() {
+            const feedback = document.createElement('div');
+            feedback.classList.add('score-feedback');
+            const canvasRect = canvas.getBoundingClientRect();
+            feedback.style.top = `${canvasRect.top + dog.y - 30}px`;
+            feedback.style.left = `${canvasRect.left + dog.x + dog.width / 2}px`;
+            feedback.textContent = '+1';
+            document.body.appendChild(feedback);
+
+            setTimeout(() => {
+                feedback.remove();
+            }, 2000);
+        }
+
+
+        canvas.addEventListener('mousemove', updateDogPosition);
+
+        document.getElementById('homeButton').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        playGameButton.addEventListener('click', () => {
+            playGameButton.style.display = 'none'; // Hide the Play Game button
+            canvas.style.display = 'block'; // Show the game canvas
+            scoreBoard.style.display = 'block'; // Show the score board
+            eggInterval = setInterval(addEgg, 15000); // Start adding eggs at intervals
+            createBackgroundAnimation(); // Start background animation
+            gameLoop(); // Start the game loop
+        });
+    </script>
+</body>
+</html>

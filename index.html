@@ -8,10 +8,11 @@
         body {
             position: relative; /* Add this */
             z-index: 0; /* Ensure body has a lower z-index */
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'Comic Sans MS', 'Comic Sans', sans-serif;
             background-color: #3e0a6f;
             color: #ebff7b;
             text-align: center;
+            justify-content: center; /* Center the content vertically */
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #3e0a6f 0%, #5e55dd 100%);
@@ -89,6 +90,7 @@
             position: relative; /* Add this */
             z-index: 1; /* Ensure content has a higher z-index */
             padding: 20px;
+            font-family: 'Comic Sans MS', 'Comic Sans', sans-serif;
         }
         .links {
             margin: 20px 0;
@@ -291,8 +293,9 @@
 
         .new-click-indicator {
             position: absolute;
-            top: 280px;
-            right: 825px; /* Position it at the top right corner */
+            top: 7px; /* Adjust as needed */
+            left: 5%; /* Center horizontally */
+            transform: translateX(-50%); /* Center horizontally */
             animation: bounceIndicator 1s infinite;
             z-index: 100; /* Ensure the indicator is above other elements */
             width: 150px; /* Set a fixed width for the image */
@@ -302,9 +305,52 @@
         }
 
         @keyframes bounceIndicator {
-            0%, 20%, 50%, 80%, 100% { transform: rotate(25deg) translateY(0); }
-            40% { transform: rotate(25deg) translateY(-10px); }
-            60% { transform: rotate(25deg) translateY(-5px); }
+            0%, 20%, 50%, 80%, 100% { transform: rotate(-25deg) translateY(0); }
+            40% { transform: rotate(-25deg) translateY(-10px); }
+            60% { transform: rotate(-25deg) translateY(-5px); }
+        }
+
+        .game-section {
+            background: linear-gradient(135deg, #ffcc00, #ff6f00);
+            color: #2c3e50;
+            padding: 40px 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px auto; /* Center the section horizontally */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            width: 100%; /* Ensure it takes the full width */
+            max-width: 800px; /* Maximum width restriction */
+        }
+
+        .game-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .game-section p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        #playGameButton {
+            background: #ff4444;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #playGameButton:hover {
+            background: #ff6666;
+            transform: scale(1.05);
+        }
+
+        .game-section:hover {
+            transform: scale(1.02);
         }
 
         /* Media Queries for Responsive Design */
@@ -383,11 +429,6 @@
                 font-size: 1em;
                 top: 30%;
             }
-            .click-indicator {
-                font-size: 0.3em;
-                top: 5px;
-                right: -20px;
-            }
         }
     </style>
 </head>
@@ -414,15 +455,13 @@
             CA: 75h1bxgQQP4rgSmdq9gsbohtZAkPmRFYDinPsvck5sPx
             <button id="copy-btn" onclick="copyToClipboard('75h1bxgQQP4rgSmdq9gsbohtZAkPmRFYDinPsvck5sPx')">📋</button>
         </div>
-        <img src="clickme.png" alt="Click me" class="new-click-indicator" id="click-indicator">
 
-        <div class="interactive" id="interactive" onclick="revealDog()">
-            <div id="egg" class="emoji">🥚</div>
-            <div id="dog" class="dog-revealed">🐶</div>
-        </div>
-        
-        
-        
+        <div class="game-section">
+            <h2>Get Ready for the Most Egg-citing Coin Game!</h2>
+            <p>Help the dog bounce eggs off his head to keep them in the air! Click the button below to jump into the world of Egg on Dog!</p>
+            <button id="playGameButton">Play Now</button>
+        </div>                
+
         <div class="timeline">
             <h2>Timeline of Egg on Dog (on sol)</h2>
             <br><br>
@@ -453,6 +492,13 @@
             </div>
             
         </div>
+
+        <div class="interactive" id="interactive" onclick="revealDog()">
+            <div id="egg" class="emoji">🥚</div>
+            <div id="dog" class="dog-revealed">🐶</div>
+            <img src="clickme.png" alt="Click me" class="new-click-indicator" id="click-indicator">
+        </div>
+
         <style>#dexscreener-embed{transform:translateX(5.5%); width:90%; padding-bottom:125%;}@media(min-width:1400px){#dexscreener-embed{padding-bottom:65%;}}#dexscreener-embed iframe{position:absolute;width:100%;height:100%;top:0;left:0;border:0;}</style><div id="dexscreener-embed"><iframe src="https://dexscreener.com/solana/HdMYTf6wwY9xVfCyWf4kRAGgJBUQ8eXXxJVZpkkoboGS?embed=1&theme=dark"></iframe></div>
     </div>
     <footer>
@@ -516,6 +562,10 @@
         clickIndicator.addEventListener('click', (event) => {
             event.stopPropagation(); // Prevents the event from bubbling up to parent elements
             revealDog();
+        });
+
+        document.getElementById('playGameButton').addEventListener('click', () => {
+            window.location.href = 'game.html'; // Change this URL to the actual game page URL
         });
 
         function copyToClipboard(text) {
